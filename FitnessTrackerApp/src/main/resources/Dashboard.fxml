@@ -86,7 +86,6 @@
                                 <TableColumn fx:id="measurementDateColumn" text="Date" minWidth="150" />
                                 <TableColumn fx:id="weightColumn" text="Weight (kg)" minWidth="150" />
                                 <TableColumn fx:id="heightColumn" text="Height (cm)" minWidth="150" />
-                                <TableColumn fx:id="bodyFatColumn" text="Body Fat (%)" minWidth="150" />
                                 <TableColumn fx:id="bmiColumn" text="BMI" minWidth="100" />
                             </columns>
                         </TableView>

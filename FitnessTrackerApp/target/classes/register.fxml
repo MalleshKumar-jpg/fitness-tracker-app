@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.ColumnConstraints?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.fitnesstracker.controller.RegisterController"
+            fitToWidth="true" fitToHeight="true"
+            style="-fx-background: #ecf0f1; -fx-background-color: #ecf0f1;">
+
+    <VBox alignment="TOP_CENTER" spacing="15.0" style="-fx-background-color: #ecf0f1;">
+        <padding>
+            <Insets top="30" right="100" bottom="30" left="100" />
+        </padding>
+
+        <Label text="Fitness Tracker" textFill="#2c3e50">
+            <font>
+                <Font name="System Bold" size="42.0" />
+            </font>
+        </Label>
+
+        <!-- Register Section -->
+        <VBox alignment="TOP_CENTER" prefWidth="600.0" spacing="15.0" style="-fx-background-color: white; -fx-padding: 30; -fx-border-color: #2ecc71; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-width: 2;">
+            <Label text="Create Account" textFill="#2c3e50">
+                <font>
+                    <Font name="System Bold" size="28.0" />
+                </font>
+                <VBox.margin>
+                    <Insets bottom="10" />
+                </VBox.margin>
+            </Label>
+
+            <GridPane hgap="15.0" vgap="12.0" alignment="CENTER">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="140" prefWidth="140" />
+                    <ColumnConstraints minWidth="350" prefWidth="350" />
+                </columnConstraints>
+
+                <!-- Username -->
+                <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-size: 13px;" />
+                <TextField fx:id="registerNameField" promptText="Choose a username" GridPane.columnIndex="1" GridPane.rowIndex="0" prefHeight="35.0" style="-fx-font-size: 13px; -fx-border-color: #3498db; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" />
+
+                <!-- Password -->
+                <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-font-size: 13px;" />
+                <PasswordField fx:id="registerPasswordField" promptText="Password (6+ characters)" GridPane.columnIndex="1" GridPane.rowIndex="1" prefHeight="35.0" style="-fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" />
+
+                <!-- Confirm Password -->
+                <Label text="Confirm Password:" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-font-size: 13px;" />
+                <PasswordField fx:id="regConfirmPasswordField" promptText="Confirm password" GridPane.columnIndex="1" GridPane.rowIndex="2" prefHeight="35.0" style="-fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" />
+
+                <!-- Separator Row -->
+                <Separator GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
+                    <GridPane.margin>
+                        <Insets top="5" bottom="5" />
+                    </GridPane.margin>
+                </Separator>
+
+                <!-- Name -->
+                <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="4" style="-fx-font-size: 13px;" />
+                <TextField fx:id="nameField" promptText="Your full name" GridPane.columnIndex="1" GridPane.rowIndex="4" prefHeight="35.0" style="-fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" />
+
+                <!-- Gender (ComboBox) -->
+                <Label text="Gender:" GridPane.columnIndex="0" GridPane.rowIndex="5" style="-fx-font-size: 13px;" />
+                <ComboBox fx:id="genderComboBox" promptText="Select gender" GridPane.columnIndex="1" GridPane.rowIndex="5" prefHeight="35.0" prefWidth="350.0" style="-fx-font-size: 13px;" />
+
+                <!-- Age -->
+                <Label text="Age:" GridPane.columnIndex="0" GridPane.rowIndex="6" style="-fx-font-size: 13px;" />
+                <TextField fx:id="ageField" promptText="Enter your age" GridPane.columnIndex="1" GridPane.rowIndex="6" prefHeight="35.0" style="-fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" />
+
+                <!-- Height (m) -->
+                <Label text="Height (m):" GridPane.columnIndex="0" GridPane.rowIndex="7" style="-fx-font-size: 13px;" />
+                <TextField fx:id="heightField" promptText="Height in centimeters (e.g., 175)" GridPane.columnIndex="1" GridPane.rowIndex="7" prefHeight="35.0" style="-fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" />
+
+                <!-- Weight (kg) -->
+                <Label text="Weight (kg):" GridPane.columnIndex="0" GridPane.rowIndex="8" style="-fx-font-size: 13px;" />
+                <TextField fx:id="weightField" promptText="Weight in kilograms (e.g., 70)" GridPane.columnIndex="1" GridPane.rowIndex="8" prefHeight="35.0" style="-fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;" />
+            </GridPane>
+
+            <HBox alignment="CENTER" spacing="15">
+                <VBox.margin>
+                    <Insets top="10" />
+                </VBox.margin>
+                <Button mnemonicParsing="false" onAction="#handleRegister" prefWidth="180.0" prefHeight="40.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="Register" />
+
+                <Button mnemonicParsing="false" onAction="#handleBackToLogin" prefWidth="180.0" prefHeight="40.0" style="-fx-background-color: #bdc3c7; -fx-text-fill: #2c3e50; -fx-font-size: 14px; -fx-background-radius: 5; -fx-cursor: hand;" text="Back to Login" />
+            </HBox>
+
+            <Label fx:id="regstatusLabel" textFill="#e67e22" wrapText="true" style="-fx-font-size: 12px;">
+                <VBox.margin>
+                    <Insets top="5" />
+                </VBox.margin>
+            </Label>
+        </VBox>
+    </VBox>
+
+</ScrollPane>

@@ -50,7 +50,6 @@ public class DashboardController {
     @FXML private TableColumn<Measurement, String> measurementDateColumn;
     @FXML private TableColumn<Measurement, Double> weightColumn;
     @FXML private TableColumn<Measurement, Double> heightColumn;
-    @FXML private TableColumn<Measurement, Double> bodyFatColumn;
     @FXML private TableColumn<Measurement, Double> bmiColumn;
 
     // --- FXML Table Elements for Workouts (4 columns) ---
