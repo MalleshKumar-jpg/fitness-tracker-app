@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fitnesstracker.controller.DashboardController"
+      prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #f4f7fa;">
+
+    <MenuBar>
+        <menus>
+            <Menu text="Log Data">
+                <items>
+                    <MenuItem text="Log Workout" onAction="#handleLogWorkout" />
+                    <MenuItem text="Log Measurement" onAction="#handleLogMeasurement" />
+                </items>
+            </Menu>
+            <Menu text="User">
+                <items>
+                    <MenuItem text="Logout" onAction="#handleLogout" />
+                </items>
+            </Menu>
+        </menus>
+    </MenuBar>
+
+    <!-- Welcome Message Section -->
+    <HBox alignment="CENTER_LEFT">
+        <padding>
+            <Insets top="15" right="20" bottom="5" left="20" />
+        </padding>
+        <Text fx:id="welcomeMessageText" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-fill: #1a4f78;" text="Loading..." />
+    </HBox>
+
+    <!-- Summary Metrics Panel -->
+    <GridPane hgap="15" vgap="10" style="-fx-background-color: #ffffff; -fx-border-color: #e0e6ed; -fx-border-width: 1; -fx-border-radius: 8;">
+        <padding>
+            <Insets top="15" right="20" bottom="15" left="20" />
+        </padding>
+        <columnConstraints>
+            <ColumnConstraints percentWidth="25.0" />
+            <ColumnConstraints percentWidth="25.0" />
+            <ColumnConstraints percentWidth="25.0" />
+            <ColumnConstraints percentWidth="25.0" />
+        </columnConstraints>
+
+        <!-- Row 0: Titles -->
+        <Label text="Total Workouts" style="-fx-font-weight: bold; -fx-text-fill: #607d8b;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label text="Calories Burned Today" style="-fx-font-weight: bold; -fx-text-fill: #607d8b;" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="Latest Weight" style="-fx-font-weight: bold; -fx-text-fill: #607d8b;" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <Label text="Status/BMI" style="-fx-font-weight: bold; -fx-text-fill: #607d8b;" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+        <!-- Row 1: Values -->
+        <Label fx:id="totalWorkoutsLabel" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #4CAF50;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label fx:id="totalCaloriesLabel" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #FF9800;" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label fx:id="lastWeightLabel" text="N/A" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2196F3;" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+        <Label fx:id="statusLabel" text="Ok" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #795548;" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+    </GridPane>
+
+    <!-- Padding above the TabPane -->
+    <Region VBox.vgrow="NEVER" prefHeight="10"/>
+
+    <TabPane VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE">
+        <!-- Body Progress Tab with ScrollPane -->
+        <Tab text="Body Progress" closable="false">
+            <ScrollPane fitToWidth="true" style="-fx-background: #f4f7fa; -fx-background-color: #f4f7fa;">
+                <VBox spacing="20" style="-fx-background-color: #f4f7fa;">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20" />
+                    </padding>
+
+                    <!-- Chart Section -->
+                    <VBox spacing="10">
+                        <Label text="Weight Over Time" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <LineChart fx:id="weightBmiChart" title="Weight History" prefHeight="350" animated="false">
+                            <xAxis><CategoryAxis label="Date" /></xAxis>
+                            <yAxis><NumberAxis label="Weight (kg)" /></yAxis>
+                        </LineChart>
+                    </VBox>
+
+                    <!-- Table Section -->
+                    <VBox spacing="10">
+                        <Label text="Measurement Log" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <TableView fx:id="measurementTable" prefHeight="300" prefWidth="900">
+                            <columns>
+                                <TableColumn fx:id="measurementDateColumn" text="Date" minWidth="150" />
+                                <TableColumn fx:id="weightColumn" text="Weight (kg)" minWidth="150" />
+                                <TableColumn fx:id="heightColumn" text="Height (cm)" minWidth="150" />
+                                <TableColumn fx:id="bodyFatColumn" text="Body Fat (%)" minWidth="150" />
+                                <TableColumn fx:id="bmiColumn" text="BMI" minWidth="100" />
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+        </Tab>
+
+        <!-- Workout Progress Tab with ScrollPane -->
+        <Tab text="Workout Progress" closable="false">
+            <ScrollPane fitToWidth="true" style="-fx-background: #f4f7fa; -fx-background-color: #f4f7fa;">
+                <VBox spacing="20" style="-fx-background-color: #f4f7fa;">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20" />
+                    </padding>
+
+                    <!-- Chart Section -->
+                    <VBox spacing="10">
+                        <Label text="Calories Burned by Workout Type" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <BarChart fx:id="calorieBurnChart" title="Workout Summary" prefHeight="350" animated="false">
+                            <xAxis><CategoryAxis label="Workout Type" /></xAxis>
+                            <yAxis><NumberAxis label="Total Calories" /></yAxis>
+                        </BarChart>
+                    </VBox>
+
+                    <!-- Table Section -->
+                    <VBox spacing="10">
+                        <Label text="Workout Log" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <TableView fx:id="workoutTable" prefHeight="300" prefWidth="900">
+                            <columns>
+                                <TableColumn fx:id="workoutDateColumn" text="Date" minWidth="180" />
+                                <TableColumn fx:id="workoutTypeColumn" text="Workout Type" minWidth="250" />
+                                <TableColumn fx:id="durationColumn" text="Duration (min)" minWidth="150" />
+                                <TableColumn fx:id="caloriesColumn" text="Calories Burned" minWidth="150" />
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+        </Tab>
+    </TabPane>
+</VBox>

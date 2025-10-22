@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fitnesstracker.controller.WorkoutLogController"
+      spacing="15" prefWidth="400" prefHeight="400" style="-fx-background-color: #f4f7fa; -fx-padding: 20;">
+
+    <Label text="Log Workout" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1a4f78;"/>
+
+    <GridPane hgap="10" vgap="15">
+        <columnConstraints>
+            <ColumnConstraints minWidth="120" />
+            <ColumnConstraints minWidth="220" hgrow="ALWAYS" />
+        </columnConstraints>
+
+        <!-- Date -->
+        <Label text="Date:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="workoutDatePicker" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="220"/>
+
+        <!-- Workout Type - NOW A DROPDOWN! -->
+        <Label text="Workout Type:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="workoutTypeComboBox" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                  prefWidth="220" promptText="Select workout type"/>
+
+        <!-- Duration -->
+        <Label text="Duration (min):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="durationField" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="e.g., 30"/>
+
+        <!-- Calories Burned -->
+        <Label text="Calories Burned:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="caloriesField" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="e.g., 300"/>
+    </GridPane>
+
+    <!-- Status Label -->
+    <Label fx:id="statusLabel" text="" style="-fx-text-fill: red; -fx-font-weight: bold;"/>
+
+    <!-- Buttons -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Cancel" onAction="#handleCancel" prefWidth="100" style="-fx-background-color: #e0e0e0;"/>
+        <Button text="Save" onAction="#handleSaveWorkout" prefWidth="100" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+    </HBox>
+</VBox>

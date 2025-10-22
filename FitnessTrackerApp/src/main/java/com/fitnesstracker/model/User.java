@@ -3,70 +3,49 @@ package com.fitnesstracker.model;
 import jakarta.persistence.*;
 import java.util.Set;
 
+/**
+ * Maps to the USER table (renamed to APP_USER to avoid Oracle keyword conflicts).
+ * This is the parent entity for workouts and measurements.
+ */
 @Entity
 @Table(name = "APP_USER")
 public class User {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "USERID")
     private Long userId;
 
-    @Column(name = "NAME", nullable = false, unique = true, length = 50)
+
+    private Integer age;
+    @Column(name = "NAME", length = 50, nullable = false, unique = true)
     private String name;
 
-    @Column(name = "PASSWORD", nullable = false, length = 50)
+    @Column(name = "PASSWORD", length = 50, nullable = false)
     private String password;
 
-    @Column(name = "AGE", nullable = false, precision = 3)  // NUMBER(3) - up to 999
-    private Integer age;
-
-    @Column(name = "GENDER", nullable = false, length = 6)  // VARCHAR2(6) - fits "Female"
+    @Column(name = "GENDER", length = 10, nullable = false)
     private String gender;
 
+    // One-to-Many relationships defined for navigation (Optional, but good practice)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Workout> workouts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Measurement> measurements;
 
-    // Constructors
     public User() {}
 
-    public User(String name, String password, Integer age, String gender) {
-        this.name = name;
-        this.password = password;
-        this.age = age;
-        this.gender = gender;
-    }
+    // --- Getters and Setters ---
 
-    // Getters and Setters
-    public Long getUserId() {
-        return userId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
+    public Integer getAge() { return age; }
+    public void setAge(Integer age) { this.age = age; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+    public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
+    // Omitted Setters for workouts and measurements for simplicity
 }
