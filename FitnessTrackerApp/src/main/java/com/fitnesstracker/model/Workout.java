@@ -21,7 +21,7 @@ public class Workout {
     @Column(nullable = false)
     private LocalDate workoutdate;
 
-    @Column(name = "WORKOUTTYPE", length = 30, nullable = false)
+    @Column(name = "WORKOUTTYPE", length = 20, nullable = false)
     private String workoutType;
 
     private Long durationMinutes; // Using "Minutes" to be explicit
