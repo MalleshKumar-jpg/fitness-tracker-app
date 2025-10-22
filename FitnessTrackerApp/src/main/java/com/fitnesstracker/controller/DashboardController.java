@@ -9,6 +9,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,36 +24,34 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Controller for the main dashboard with tables for workout and measurement logs.
- * Sorts by ID only (simpler and more reliable since IDs are sequential).
+ * Controller for the main dashboard with charts AND tables
  */
 public class DashboardController {
 
-    // --- FXML UI Elements ---
+    // UI Elements
     @FXML private Text welcomeMessageText;
     @FXML private Label totalWorkoutsLabel;
     @FXML private Label totalCaloriesLabel;
     @FXML private Label lastWeightLabel;
     @FXML private Label statusLabel;
 
-    // --- FXML Chart Elements ---
+    // Charts
     @FXML private LineChart<String, Number> weightBmiChart;
     @FXML private BarChart<String, Number> calorieBurnChart;
 
-    // --- FXML Table Elements for Measurements (5 columns) ---
+    // Measurement Table
     @FXML private TableView<Measurement> measurementTable;
     @FXML private TableColumn<Measurement, String> measurementDateColumn;
     @FXML private TableColumn<Measurement, Double> weightColumn;
     @FXML private TableColumn<Measurement, Double> heightColumn;
     @FXML private TableColumn<Measurement, Double> bmiColumn;
 
-    // --- FXML Table Elements for Workouts (4 columns) ---
+    // Workout Table
     @FXML private TableView<Workout> workoutTable;
     @FXML private TableColumn<Workout, String> workoutDateColumn;
     @FXML private TableColumn<Workout, String> workoutTypeColumn;
@@ -84,11 +83,13 @@ public class DashboardController {
     }
 
     /**
-     * Configure the measurement table columns (5 columns with BMI and Body Fat)
+     * Setup measurement table columns
      */
     private void setupMeasurementTable() {
         measurementDateColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getRecorddate().format(DATE_FORMATTER))
+                new SimpleStringProperty(
+                        cellData.getValue().getRecorddate().format(DATE_FORMATTER)
+                )
         );
 
         weightColumn.setCellValueFactory(cellData ->
@@ -108,11 +109,13 @@ public class DashboardController {
     }
 
     /**
-     * Configure the workout table columns (4 columns)
+     * Setup workout table columns
      */
     private void setupWorkoutTable() {
         workoutDateColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getWorkoutDate().format(DATE_FORMATTER))
+                new SimpleStringProperty(
+                        cellData.getValue().getWorkoutDate().format(DATE_FORMATTER)
+                )
         );
 
         workoutTypeColumn.setCellValueFactory(cellData ->
@@ -129,41 +132,19 @@ public class DashboardController {
     }
 
     /**
-     * Calculate BMI from a measurement
+     * Calculate BMI from measurement
      */
     private double calculateBMI(Measurement m) {
         if (m.getHeight() == null || m.getHeight() <= 0 || m.getWeight() == null) {
             return 0.0;
         }
-        double heightM = m.getHeight() / 100.0; // Convert cm to meters
+        double heightM = m.getHeight() / 100.0;
         double bmi = m.getWeight() / (heightM * heightM);
         return Math.round(bmi * 10.0) / 10.0;
     }
 
     /**
-     * Get BMI status category and color
-     */
-    private String getBMIStatus(double bmi) {
-        if (bmi == 0.0) return "N/A";
-        if (bmi < 18.5) return "Underweight";
-        if (bmi < 25.0) return "Normal";
-        if (bmi < 30.0) return "Overweight";
-        return "Obese";
-    }
-
-    /**
-     * Get color for BMI status
-     */
-    private String getBMIColor(double bmi) {
-        if (bmi == 0.0) return "#607d8b"; // Gray
-        if (bmi < 18.5) return "#2196F3"; // Blue - Underweight
-        if (bmi < 25.0) return "#4CAF50"; // Green - Normal
-        if (bmi < 30.0) return "#FF9800"; // Orange - Overweight
-        return "#F44336"; // Red - Obese
-    }
-
-    /**
-     * Fetches, calculates, and displays all summary data, charts, and tables.
+     * Load all summary data, charts, and tables
      */
     private void loadSummaryData() {
         if (App.getCurrentUser() == null) return;
@@ -172,68 +153,54 @@ public class DashboardController {
         List<Workout> workouts = activityDAO.findAllWorkoutsByUserId(userId);
         List<Measurement> measurements = activityDAO.findAllMeasurementsByUserId(userId);
 
-        // 1. CLEAR CHARTS FIRST
+        System.out.println("DEBUG: Loaded " + workouts.size() + " workouts");
+        System.out.println("DEBUG: Loaded " + measurements.size() + " measurements");
+
+        // Clear charts
         weightBmiChart.getData().clear();
         calorieBurnChart.getData().clear();
 
-        // 2. Calculate Summary Metrics
+        // Calculate summary metrics
         int totalWorkouts = workouts.size();
-
-        // Calculate calories burned TODAY only
-        LocalDate today = LocalDate.now();
-        int caloriesToday = workouts.stream()
-                .filter(w -> w.getWorkoutDate().equals(today))
+        int totalCalories = workouts.stream()
                 .mapToInt(Workout::getCaloriesBurned)
                 .sum();
 
         if (totalWorkoutsLabel != null) totalWorkoutsLabel.setText(String.valueOf(totalWorkouts));
-        if (totalCaloriesLabel != null) totalCaloriesLabel.setText(String.valueOf(caloriesToday));
+        if (totalCaloriesLabel != null) totalCaloriesLabel.setText(String.valueOf(totalCalories));
 
-        // 3. Find Latest Weight and Calculate BMI Status (using highest ID = newest)
+        // Find latest weight and BMI
         String lastWeight = "N/A";
-        double currentBMI = 0.0;
-
+        String status = "N/A";
         if (!measurements.isEmpty()) {
-            // Sort by ID only - higher ID = newer entry
-            measurements.sort(Comparator.comparing(Measurement::getMeasurementId));
-
-            // Last element has highest ID = most recent entry
+            measurements.sort(Comparator.comparing(Measurement::getRecorddate));
             Measurement lastMeasurement = measurements.get(measurements.size() - 1);
             lastWeight = String.format("%.1f kg", lastMeasurement.getWeight());
-            currentBMI = calculateBMI(lastMeasurement);
-        }
 
+            double bmi = calculateBMI(lastMeasurement);
+            if (bmi > 0) {
+                String bmiCategory = getBMICategory(bmi);
+                status = String.format("%s (%.1f)", bmiCategory, bmi);
+            }
+        }
         if (lastWeightLabel != null) lastWeightLabel.setText(lastWeight);
+        if (statusLabel != null) statusLabel.setText(status);
 
-        // 4. Update BMI Status Label with color
-        if (statusLabel != null) {
-            String bmiStatus = getBMIStatus(currentBMI);
-            String bmiText = currentBMI > 0
-                    ? String.format("%s (%.1f)", bmiStatus, currentBMI)
-                    : "N/A";
-            statusLabel.setText(bmiText);
-            statusLabel.setStyle(String.format(
-                    "-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: %s;",
-                    getBMIColor(currentBMI)
-            ));
-        }
-
-        // 5. Populate Weight Chart (sorted by ID for chronological order)
+        // Populate weight chart
+        measurements.sort(Comparator.comparing(Measurement::getRecorddate));
         XYChart.Series<String, Number> weightSeries = new XYChart.Series<>();
         weightSeries.setName("Weight (kg)");
 
-        measurements.stream()
-                .sorted(Comparator.comparing(Measurement::getMeasurementId))
-                .forEach(m -> {
-                    String date = m.getRecorddate().format(DateTimeFormatter.ofPattern("MMM dd"));
-                    weightSeries.getData().add(new XYChart.Data<>(date, m.getWeight()));
-                });
+        for (Measurement m : measurements) {
+            String date = m.getRecorddate().format(DateTimeFormatter.ofPattern("MMM dd"));
+            weightSeries.getData().add(new XYChart.Data<>(date, m.getWeight()));
+        }
 
         if (!weightSeries.getData().isEmpty()) {
             weightBmiChart.getData().add(weightSeries);
         }
 
-        // 6. Populate Calorie Burn Chart
+        // Populate calorie chart
         Map<String, Integer> caloriesByType = workouts.stream()
                 .collect(Collectors.groupingBy(
                         Workout::getWorkoutType,
@@ -253,17 +220,24 @@ public class DashboardController {
             calorieBurnChart.getData().add(calorieSeries);
         }
 
-        // 7. Populate Measurement Table (sorted by ID DESC = newest first)
-        List<Measurement> sortedMeasurements = measurements.stream()
-                .sorted(Comparator.comparing(Measurement::getMeasurementId).reversed())
-                .collect(Collectors.toList());
-        measurementTable.setItems(FXCollections.observableArrayList(sortedMeasurements));
+        // Populate tables
+        ObservableList<Measurement> measurementData = FXCollections.observableArrayList(measurements);
+        measurementTable.setItems(measurementData);
 
-        // 8. Populate Workout Table (sorted by ID DESC = newest first)
-        List<Workout> sortedWorkouts = workouts.stream()
-                .sorted(Comparator.comparing(Workout::getWorkoutId).reversed())
-                .collect(Collectors.toList());
-        workoutTable.setItems(FXCollections.observableArrayList(sortedWorkouts));
+        ObservableList<Workout> workoutData = FXCollections.observableArrayList(workouts);
+        workoutTable.setItems(workoutData);
+
+        System.out.println("DEBUG: Tables populated - Measurements: " + measurements.size() + ", Workouts: " + workouts.size());
+    }
+
+    /**
+     * Get BMI category
+     */
+    private String getBMICategory(double bmi) {
+        if (bmi < 18.5) return "Underweight";
+        if (bmi < 25) return "Normal";
+        if (bmi < 30) return "Overweight";
+        return "Obese";
     }
 
     @FXML
@@ -305,7 +279,7 @@ public class DashboardController {
         try {
             App.logout();
         } catch (IOException e) {
-            System.err.println("Failed to load login FXML on logout.");
+            System.err.println("Failed to load login_register FXML on logout.");
             e.printStackTrace();
         }
     }

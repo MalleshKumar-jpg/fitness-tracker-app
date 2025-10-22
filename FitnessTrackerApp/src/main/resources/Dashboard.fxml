@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Text?>
 
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fitnesstracker.controller.DashboardController"
-      prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #f4f7fa;">
+      prefHeight="900.0" prefWidth="1400.0" style="-fx-background-color: #f4f7fa;">
 
     <MenuBar>
         <menus>
@@ -54,39 +54,42 @@
         <Label fx:id="totalWorkoutsLabel" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #4CAF50;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
         <Label fx:id="totalCaloriesLabel" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #FF9800;" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
         <Label fx:id="lastWeightLabel" text="N/A" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2196F3;" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-        <Label fx:id="statusLabel" text="Ok" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #795548;" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+        <Label fx:id="statusLabel" text="Normal" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #4CAF50;" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
     </GridPane>
 
-    <!-- Padding above the TabPane -->
+    <!-- Padding -->
     <Region VBox.vgrow="NEVER" prefHeight="10"/>
 
+    <!-- TabPane with Charts and Tables -->
     <TabPane VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE">
-        <!-- Body Progress Tab with ScrollPane -->
+
+        <!-- Body Progress Tab -->
         <Tab text="Body Progress" closable="false">
-            <ScrollPane fitToWidth="true" style="-fx-background: #f4f7fa; -fx-background-color: #f4f7fa;">
-                <VBox spacing="20" style="-fx-background-color: #f4f7fa;">
+            <!-- ScrollPane to enable scrolling -->
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <VBox spacing="20">
                     <padding>
                         <Insets top="20" right="20" bottom="20" left="20" />
                     </padding>
 
-                    <!-- Chart Section -->
+                    <!-- Weight Chart - BIGGER -->
                     <VBox spacing="10">
-                        <Label text="Weight Over Time" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                        <LineChart fx:id="weightBmiChart" title="Weight History" prefHeight="350" animated="false">
+                        <Label text="Weight Over Time" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                        <LineChart fx:id="weightBmiChart" title="Weight History" prefHeight="400" minHeight="400">
                             <xAxis><CategoryAxis label="Date" /></xAxis>
                             <yAxis><NumberAxis label="Weight (kg)" /></yAxis>
                         </LineChart>
                     </VBox>
 
-                    <!-- Table Section -->
+                    <!-- Measurement Table - WIDER COLUMNS -->
                     <VBox spacing="10">
-                        <Label text="Measurement Log" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                        <TableView fx:id="measurementTable" prefHeight="300" prefWidth="900">
+                        <Label text="Measurement Log" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                        <TableView fx:id="measurementTable" prefHeight="300" minWidth="1200">
                             <columns>
-                                <TableColumn fx:id="measurementDateColumn" text="Date" minWidth="150" />
-                                <TableColumn fx:id="weightColumn" text="Weight (kg)" minWidth="150" />
-                                <TableColumn fx:id="heightColumn" text="Height (cm)" minWidth="150" />
-                                <TableColumn fx:id="bmiColumn" text="BMI" minWidth="100" />
+                                <TableColumn fx:id="measurementDateColumn" text="Date" prefWidth="350" minWidth="250" />
+                                <TableColumn fx:id="weightColumn" text="Weight (kg)" prefWidth="350" minWidth="200" />
+                                <TableColumn fx:id="heightColumn" text="Height (cm)" prefWidth="350" minWidth="200" />
+                                <TableColumn fx:id="bmiColumn" text="BMI" prefWidth="350" minWidth="200" />
                             </columns>
                         </TableView>
                     </VBox>
@@ -94,32 +97,33 @@
             </ScrollPane>
         </Tab>
 
-        <!-- Workout Progress Tab with ScrollPane -->
+        <!-- Workout Progress Tab -->
         <Tab text="Workout Progress" closable="false">
-            <ScrollPane fitToWidth="true" style="-fx-background: #f4f7fa; -fx-background-color: #f4f7fa;">
-                <VBox spacing="20" style="-fx-background-color: #f4f7fa;">
+            <!-- ScrollPane to enable scrolling -->
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <VBox spacing="20">
                     <padding>
                         <Insets top="20" right="20" bottom="20" left="20" />
                     </padding>
 
-                    <!-- Chart Section -->
+                    <!-- Calorie Chart - BIGGER -->
                     <VBox spacing="10">
-                        <Label text="Calories Burned by Workout Type" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                        <BarChart fx:id="calorieBurnChart" title="Workout Summary" prefHeight="350" animated="false">
+                        <Label text="Calories Burned by Workout Type" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                        <BarChart fx:id="calorieBurnChart" title="Workout Summary" prefHeight="400" minHeight="400">
                             <xAxis><CategoryAxis label="Workout Type" /></xAxis>
                             <yAxis><NumberAxis label="Total Calories" /></yAxis>
                         </BarChart>
                     </VBox>
 
-                    <!-- Table Section -->
+                    <!-- Workout Table - WIDER COLUMNS -->
                     <VBox spacing="10">
-                        <Label text="Workout Log" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                        <TableView fx:id="workoutTable" prefHeight="300" prefWidth="900">
+                        <Label text="Workout Log" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                        <TableView fx:id="workoutTable" prefHeight="300" minWidth="1200">
                             <columns>
-                                <TableColumn fx:id="workoutDateColumn" text="Date" minWidth="180" />
-                                <TableColumn fx:id="workoutTypeColumn" text="Workout Type" minWidth="250" />
-                                <TableColumn fx:id="durationColumn" text="Duration (min)" minWidth="150" />
-                                <TableColumn fx:id="caloriesColumn" text="Calories Burned" minWidth="150" />
+                                <TableColumn fx:id="workoutDateColumn" text="Date" prefWidth="350" minWidth="250" />
+                                <TableColumn fx:id="workoutTypeColumn" text="Type" prefWidth="300" minWidth="200" />
+                                <TableColumn fx:id="durationColumn" text="Duration (min)" prefWidth="300" minWidth="200" />
+                                <TableColumn fx:id="caloriesColumn" text="Calories Burned" prefWidth="350" minWidth="200" />
                             </columns>
                         </TableView>
                     </VBox>

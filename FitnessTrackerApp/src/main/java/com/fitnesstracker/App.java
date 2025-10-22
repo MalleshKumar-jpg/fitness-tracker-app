@@ -67,7 +67,13 @@ public class App extends Application {
         } else {
             scene.setRoot(root);
         }
+        primaryStage.setResizable(true);
+        primaryStage.setMinWidth(1200);
+        primaryStage.setMinHeight(800);
 
+// SET PREFERRED SIZE
+        primaryStage.setWidth(1600);
+        primaryStage.setHeight(1000);
         primaryStage.show();
     }
     /**
