@@ -1,0 +1,13 @@
+com/fitnesstracker/model/Measurement.class
+com/fitnesstracker/service/MeasurementService.class
+com/fitnesstracker/App.class
+com/fitnesstracker/model/Workout.class
+com/fitnesstracker/controller/LoginController.class
+com/fitnesstracker/service/WorkoutService.class
+com/fitnesstracker/controller/MeasurementLogController.class
+com/fitnesstracker/controller/RegisterController.class
+com/fitnesstracker/model/User.class
+com/fitnesstracker/HibernateUtil.class
+com/fitnesstracker/controller/WorkoutLogController.class
+com/fitnesstracker/controller/DashboardController.class
+com/fitnesstracker/dao/ActivityDAO.class
