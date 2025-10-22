@@ -17,10 +17,10 @@ public class User {
 
 
     private Integer age;
-    @Column(name = "NAME", length = 50, nullable = false, unique = true)
+    @Column(name = "NAME", length = 20, nullable = false, unique = true)
     private String name;
 
-    @Column(name = "PASSWORD", length = 50, nullable = false)
+    @Column(name = "PASSWORD", length = 20, nullable = false)
     private String password;
 
     @Column(name = "GENDER", length = 10, nullable = false)
