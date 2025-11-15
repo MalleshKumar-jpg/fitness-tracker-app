@@ -22,15 +22,9 @@ public class RegisterController {
     @FXML
     private PasswordField regConfirmPasswordField;
     @FXML
-    private TextField nameField;
-    @FXML
     private ComboBox<String> genderComboBox;
     @FXML
     private TextField ageField;
-    @FXML
-    private TextField heightField;
-    @FXML
-    private TextField weightField;
     @FXML
     private Label regstatusLabel;
 
@@ -45,19 +39,16 @@ public class RegisterController {
     @FXML
     private void handleRegister() {
         String username = registerNameField.getText().trim();
-        String name = nameField.getText().trim();
         String ageText = ageField.getText().trim();
         String gender = genderComboBox.getValue();
         String password = registerPasswordField.getText();
         String confirmPassword = regConfirmPasswordField.getText();
-        String heightText = heightField.getText().trim();
-        String weightText = weightField.getText().trim();
 
         regstatusLabel.setText("");
 
         // Validation
-        if (username.isEmpty() || password.isEmpty() || name.isEmpty() || ageText.isEmpty() || gender == null) {
-            regstatusLabel.setText("Username, password, name, age, and gender are required.");
+        if (username.isEmpty() || password.isEmpty() ||  ageText.isEmpty() || gender == null) {
+            regstatusLabel.setText("Username, password, age, and gender are required.");
             return;
         }
 
@@ -93,25 +84,6 @@ public class RegisterController {
 
         try {
             activityDAO.save(newUser);
-
-            // If height and weight are provided, create initial measurement
-            if (!heightText.isEmpty() && !weightText.isEmpty()) {
-                try {
-                    Double height = Double.parseDouble(heightText);
-                    Double weight = Double.parseDouble(weightText);
-
-                    if (height > 0 && weight > 0) {
-                        Measurement initialMeasurement = new Measurement();
-                        initialMeasurement.setUser(newUser);
-                        initialMeasurement.setHeight(height); // Convert meters to cm
-                        initialMeasurement.setWeight(weight);
-                        initialMeasurement.setRecorddate(LocalDate.now());
-                        activityDAO.save(initialMeasurement);
-                    }
-                } catch (NumberFormatException e) {
-                    // Skip initial measurement if values are invalid
-                }
-            }
 
             regstatusLabel.setTextFill(javafx.scene.paint.Color.GREEN);
             regstatusLabel.setText("Registration successful! Logging you in...");

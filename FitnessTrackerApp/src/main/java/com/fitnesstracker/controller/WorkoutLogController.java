@@ -40,7 +40,6 @@ public class WorkoutLogController {
                 "Yoga",
                 "Walking",
                 "Cardio",
-                "HIIT",
                 "Basketball",
                 "Soccer",
                 "Tennis",
