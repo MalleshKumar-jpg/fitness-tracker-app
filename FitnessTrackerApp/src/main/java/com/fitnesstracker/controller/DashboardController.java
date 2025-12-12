@@ -1,12 +1,10 @@
 package com.fitnesstracker.controller;
-
 import com.fitnesstracker.App;
 import com.fitnesstracker.dao.ActivityDAO;
 import com.fitnesstracker.model.Measurement;
 import com.fitnesstracker.model.Workout;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,10 +15,9 @@ import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -30,6 +27,7 @@ import java.util.stream.Collectors;
 
 /**
  * Controller for the main dashboard with charts AND tables
+ * With added context menu for update/delete operations
  */
 public class DashboardController {
 
@@ -55,7 +53,7 @@ public class DashboardController {
     @FXML private TableView<Workout> workoutTable;
     @FXML private TableColumn<Workout, String> workoutDateColumn;
     @FXML private TableColumn<Workout, String> workoutTypeColumn;
-    @FXML private TableColumn<Workout, Long> durationColumn;
+    @FXML private TableColumn<Workout, Integer> durationColumn;
     @FXML private TableColumn<Workout, Integer> caloriesColumn;
 
     private final ActivityDAO activityDAO = new ActivityDAO();
@@ -106,6 +104,38 @@ public class DashboardController {
             double bmi = calculateBMI(m);
             return new SimpleDoubleProperty(bmi).asObject();
         });
+
+        // Add context menu to measurement table
+        measurementTable.setRowFactory(tv -> {
+            TableRow<Measurement> row = new TableRow<>();
+            ContextMenu contextMenu = new ContextMenu();
+
+            MenuItem editItem = new MenuItem("Edit Measurement");
+            editItem.setOnAction(event -> {
+                Measurement selectedMeasurement = measurementTable.getSelectionModel().getSelectedItem();
+                if (selectedMeasurement != null) {
+                    showEditMeasurementDialog(selectedMeasurement);
+                }
+            });
+
+            MenuItem deleteItem = new MenuItem("Delete Measurement");
+            deleteItem.setOnAction(event -> {
+                Measurement selectedMeasurement = measurementTable.getSelectionModel().getSelectedItem();
+                if (selectedMeasurement != null) {
+                    confirmAndDeleteMeasurement(selectedMeasurement);
+                }
+            });
+
+            contextMenu.getItems().addAll(editItem, deleteItem);
+
+            // Set context menu on row, but only display it on non-null items
+            row.contextMenuProperty().bind(
+                    javafx.beans.binding.Bindings.when(javafx.beans.binding.Bindings.isNotNull(row.itemProperty()))
+                            .then(contextMenu)
+                            .otherwise((ContextMenu)null));
+
+            return row;
+        });
     }
 
     /**
@@ -122,13 +152,46 @@ public class DashboardController {
                 new SimpleStringProperty(cellData.getValue().getWorkoutType())
         );
 
-        durationColumn.setCellValueFactory(cellData ->
-                new SimpleLongProperty(cellData.getValue().getDurationMinutes()).asObject()
-        );
+        durationColumn.setCellValueFactory(cellData -> {
+            Long duration = cellData.getValue().getDurationMinutes();
+            return new SimpleIntegerProperty(duration != null ? duration.intValue() : 0).asObject();
+        });
 
         caloriesColumn.setCellValueFactory(cellData ->
                 new SimpleIntegerProperty(cellData.getValue().getCaloriesBurned()).asObject()
         );
+
+        // Add context menu to workout table
+        workoutTable.setRowFactory(tv -> {
+            TableRow<Workout> row = new TableRow<>();
+            ContextMenu contextMenu = new ContextMenu();
+
+            MenuItem editItem = new MenuItem("Edit Workout");
+            editItem.setOnAction(event -> {
+                Workout selectedWorkout = workoutTable.getSelectionModel().getSelectedItem();
+                if (selectedWorkout != null) {
+                    showEditWorkoutDialog(selectedWorkout);
+                }
+            });
+
+            MenuItem deleteItem = new MenuItem("Delete Workout");
+            deleteItem.setOnAction(event -> {
+                Workout selectedWorkout = workoutTable.getSelectionModel().getSelectedItem();
+                if (selectedWorkout != null) {
+                    confirmAndDeleteWorkout(selectedWorkout);
+                }
+            });
+
+            contextMenu.getItems().addAll(editItem, deleteItem);
+
+            // Set context menu on row, but only display it on non-null items
+            row.contextMenuProperty().bind(
+                    javafx.beans.binding.Bindings.when(javafx.beans.binding.Bindings.isNotNull(row.itemProperty()))
+                            .then(contextMenu)
+                            .otherwise((ContextMenu)null));
+
+            return row;
+        });
     }
 
     /**
@@ -162,7 +225,11 @@ public class DashboardController {
 
         // Calculate summary metrics
         int totalWorkouts = workouts.size();
+
+        // Calculate calories burned TODAY only
+        java.time.LocalDate today = java.time.LocalDate.now();
         int totalCalories = workouts.stream()
+                .filter(w -> w.getWorkoutDate().equals(today))  // Only today's workouts
                 .mapToInt(Workout::getCaloriesBurned)
                 .sum();
 
@@ -240,6 +307,139 @@ public class DashboardController {
         return "Obese";
     }
 
+    /**
+     * Show dialog to edit measurement
+     */
+    private void showEditMeasurementDialog(Measurement measurement) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/MeasurementLogView.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller and initialize it with existing measurement data
+            MeasurementLogController controller = loader.getController();
+            controller.initializeForEdit(measurement);
+
+            Stage editStage = new Stage();
+            editStage.setTitle("Edit Measurement");
+            editStage.initModality(Modality.APPLICATION_MODAL);
+            editStage.setScene(new Scene(root));
+            editStage.setOnHidden(e -> loadSummaryData()); // Refresh data when dialog is closed
+            editStage.show();
+
+        } catch (IOException e) {
+            System.err.println("Failed to load MeasurementLogView for editing.");
+            e.printStackTrace();
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Failed to open edit dialog");
+            alert.setContentText("An error occurred while trying to open the edit dialog.");
+            alert.showAndWait();
+        }
+    }
+
+    /**
+     * Show dialog to edit workout
+     */
+    private void showEditWorkoutDialog(Workout workout) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/WorkoutLogView.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller and initialize it with existing workout data
+            WorkoutLogController controller = loader.getController();
+            controller.initializeForEdit(workout);
+
+            Stage editStage = new Stage();
+            editStage.setTitle("Edit Workout");
+            editStage.initModality(Modality.APPLICATION_MODAL);
+            editStage.setScene(new Scene(root));
+            editStage.setOnHidden(e -> loadSummaryData()); // Refresh data when dialog is closed
+            editStage.show();
+
+        } catch (IOException e) {
+            System.err.println("Failed to load WorkoutLogView for editing.");
+            e.printStackTrace();
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Failed to open edit dialog");
+            alert.setContentText("An error occurred while trying to open the edit dialog.");
+            alert.showAndWait();
+        }
+    }
+
+    /**
+     * Confirm and delete measurement
+     */
+    private void confirmAndDeleteMeasurement(Measurement measurement) {
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDialog.setTitle("Confirm Delete");
+        confirmDialog.setHeaderText("Delete Measurement");
+        confirmDialog.setContentText("Are you sure you want to delete the measurement from " +
+                measurement.getRecorddate().format(DATE_FORMATTER) + "?");
+
+        Optional<ButtonType> result = confirmDialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                activityDAO.delete(measurement);
+                loadSummaryData(); // Refresh data after deletion
+
+                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                successAlert.setTitle("Success");
+                successAlert.setHeaderText(null);
+                successAlert.setContentText("Measurement deleted successfully.");
+                successAlert.showAndWait();
+
+            } catch (Exception e) {
+                System.err.println("Failed to delete measurement: " + e.getMessage());
+                e.printStackTrace();
+
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("Error");
+                errorAlert.setHeaderText("Failed to Delete");
+                errorAlert.setContentText("An error occurred while trying to delete the measurement.");
+                errorAlert.showAndWait();
+            }
+        }
+    }
+
+    /**
+     * Confirm and delete workout
+     */
+    private void confirmAndDeleteWorkout(Workout workout) {
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDialog.setTitle("Confirm Delete");
+        confirmDialog.setHeaderText("Delete Workout");
+        confirmDialog.setContentText("Are you sure you want to delete the workout '" +
+                workout.getWorkoutType() + "' from " +
+                workout.getWorkoutDate().format(DATE_FORMATTER) + "?");
+
+        Optional<ButtonType> result = confirmDialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                activityDAO.delete(workout);
+                loadSummaryData(); // Refresh data after deletion
+
+                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                successAlert.setTitle("Success");
+                successAlert.setHeaderText(null);
+                successAlert.setContentText("Workout deleted successfully.");
+                successAlert.showAndWait();
+
+            } catch (Exception e) {
+                System.err.println("Failed to delete workout: " + e.getMessage());
+                e.printStackTrace();
+
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("Error");
+                errorAlert.setHeaderText("Failed to Delete");
+                errorAlert.setContentText("An error occurred while trying to delete the workout.");
+                errorAlert.showAndWait();
+            }
+        }
+    }
+
     @FXML
     private void handleLogWorkout() {
         try {
@@ -257,6 +457,29 @@ public class DashboardController {
         }
     }
 
+    @FXML
+    private void handleViewReport() {
+        try {
+            // Load the simple report view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Report.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller and set the current user
+            ReportController controller = loader.getController();
+            controller.setUser(App.getCurrentUser());
+
+            // Create and show the simple report window
+            Stage reportStage = new Stage();
+            reportStage.setTitle("Fitness Report");
+            reportStage.setScene(new Scene(root, 800, 600));
+            reportStage.initModality(Modality.APPLICATION_MODAL);
+            reportStage.show();
+
+        } catch (Exception e) {
+            System.err.println("ERROR: Failed to open simple report: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void handleLogMeasurement() {
         try {
@@ -279,7 +502,7 @@ public class DashboardController {
         try {
             App.logout();
         } catch (IOException e) {
-            System.err.println("Failed to load login_register FXML on logout.");
+            System.err.println("Failed to load login FXML on logout.");
             e.printStackTrace();
         }
     }

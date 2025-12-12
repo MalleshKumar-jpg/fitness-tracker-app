@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Text?>
 
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fitnesstracker.controller.DashboardController"
-      prefHeight="900.0" prefWidth="1400.0" style="-fx-background-color: #f4f7fa;">
+      prefHeight="900.0" prefWidth="700.0" style="-fx-background-color: #f4f7fa;">
 
     <MenuBar>
         <menus>
@@ -14,6 +14,12 @@
                 <items>
                     <MenuItem text="Log Workout" onAction="#handleLogWorkout" />
                     <MenuItem text="Log Measurement" onAction="#handleLogMeasurement" />
+                </items>
+            </Menu>
+            <Menu text="Reports">
+                <items>
+
+                    <MenuItem text="View Report" onAction="#handleViewReport" />
                 </items>
             </Menu>
             <Menu text="User">
@@ -84,12 +90,12 @@
                     <!-- Measurement Table - WIDER COLUMNS -->
                     <VBox spacing="10">
                         <Label text="Measurement Log" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                        <TableView fx:id="measurementTable" prefHeight="300" minWidth="1200">
+                        <TableView fx:id="measurementTable" prefHeight="300" minWidth="800">
                             <columns>
-                                <TableColumn fx:id="measurementDateColumn" text="Date" prefWidth="350" minWidth="250" />
-                                <TableColumn fx:id="weightColumn" text="Weight (kg)" prefWidth="350" minWidth="200" />
-                                <TableColumn fx:id="heightColumn" text="Height (cm)" prefWidth="350" minWidth="200" />
-                                <TableColumn fx:id="bmiColumn" text="BMI" prefWidth="350" minWidth="200" />
+                                <TableColumn fx:id="measurementDateColumn" text="Date" prefWidth="300" minWidth="300" />
+                                <TableColumn fx:id="weightColumn" text="Weight (kg)" prefWidth="300" minWidth="300" />
+                                <TableColumn fx:id="heightColumn" text="Height (cm)" prefWidth="300" minWidth="300" />
+                                <TableColumn fx:id="bmiColumn" text="BMI" prefWidth="300" minWidth="300" />
                             </columns>
                         </TableView>
                     </VBox>
@@ -118,12 +124,12 @@
                     <!-- Workout Table - WIDER COLUMNS -->
                     <VBox spacing="10">
                         <Label text="Workout Log" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                        <TableView fx:id="workoutTable" prefHeight="300" minWidth="1200">
+                        <TableView fx:id="workoutTable" prefHeight="300" minWidth="800">
                             <columns>
-                                <TableColumn fx:id="workoutDateColumn" text="Date" prefWidth="350" minWidth="250" />
-                                <TableColumn fx:id="workoutTypeColumn" text="Type" prefWidth="300" minWidth="200" />
-                                <TableColumn fx:id="durationColumn" text="Duration (min)" prefWidth="300" minWidth="200" />
-                                <TableColumn fx:id="caloriesColumn" text="Calories Burned" prefWidth="350" minWidth="200" />
+                                <TableColumn fx:id="workoutDateColumn" text="Date" prefWidth="300" minWidth="300" />
+                                <TableColumn fx:id="workoutTypeColumn" text="Type" prefWidth="300" minWidth="300" />
+                                <TableColumn fx:id="durationColumn" text="Duration (min)" prefWidth="300" minWidth="300" />
+                                <TableColumn fx:id="caloriesColumn" text="Calories Burned" prefWidth="300" minWidth="300" />
                             </columns>
                         </TableView>
                     </VBox>

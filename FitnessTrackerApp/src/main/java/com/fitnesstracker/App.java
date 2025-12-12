@@ -1,7 +1,6 @@
 package com.fitnesstracker;
 
 import com.fitnesstracker.model.User;
-import com.fitnesstracker.HibernateUtil;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -52,26 +51,25 @@ public class App extends Application {
     }
 
     public static void showDashboard(User user) throws Exception {
+        // CRITICAL: Set current user BEFORE loading FXML
+        // This ensures DashboardController.initialize() sees the correct user
         setCurrentUser(user);
 
+        // Create a NEW FXMLLoader instance to ensure fresh controller
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/Dashboard.fxml"));
         Parent root = loader.load();
 
         primaryStage.setTitle("Fitness Tracker - Dashboard");
 
-        // Create a new Scene if one doesn't exist, or replace the root of the existing one
-        Scene scene = primaryStage.getScene();
-        if (scene == null) {
-            scene = new Scene(root, 1000, 700);
-            primaryStage.setScene(scene);
-        } else {
-            scene.setRoot(root);
-        }
+        // ALWAYS create a new Scene to avoid stale controller references
+        Scene scene = new Scene(root, 1600, 1000);
+        primaryStage.setScene(scene);
+
         primaryStage.setResizable(true);
         primaryStage.setMinWidth(1200);
         primaryStage.setMinHeight(800);
 
-// SET PREFERRED SIZE
+        // SET PREFERRED SIZE
         primaryStage.setWidth(1600);
         primaryStage.setHeight(1000);
         primaryStage.show();
@@ -103,26 +101,23 @@ public class App extends Application {
     }
 
     // This is the main method that starts the Java application
+    // This is the main method that starts the Java application
     public static void main(String[] args) {
-        //to initialize the Hibernate Session Factory (Database connection)
-        SessionFactory sessionFactory = null;
-        try {
-            sessionFactory = HibernateUtil.getSessionFactory();
-            System.out.println("INFO: Hibernate Session Factory initialized successfully.");
-        } catch (Exception e) {
+        // Initialize the Hibernate Session Factory (Database connection)
+        SessionFactory sessionFactory = HibernateUtil.getSessionFactory(); // CHANGED: Directly get the session factory
+
+        if (sessionFactory == null) {
             System.err.println("FATAL: Could not initialize Hibernate Session Factory. Database setup failed.");
-            e.printStackTrace();
-            //exits the application if the database connection fails
             return;
         }
 
-        // If the database initialization is successful
+        System.out.println("INFO: Hibernate Session Factory initialized successfully.");
+
+        // Launch the JavaFX application
         Application.launch(App.class, args);
 
-        // 3. Shutdown when the application closes
-        if (sessionFactory != null) {
-            sessionFactory.close();
-            System.out.println("INFO: Hibernate Session Factory closed.");
-        }
+        // Shutdown when the application closes
+        sessionFactory.close();
+        System.out.println("INFO: Hibernate Session Factory closed.");
     }
 }

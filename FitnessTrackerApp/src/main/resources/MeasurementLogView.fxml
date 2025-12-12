@@ -24,7 +24,7 @@
 
         <!-- Height -->
         <Label text="Height (cm):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <TextField fx:id="heightField" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="e.g., 175 (optional)"/>
+        <TextField fx:id="heightField" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="e.g., 175"/>
 
     </GridPane>
 

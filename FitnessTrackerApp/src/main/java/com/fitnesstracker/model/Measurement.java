@@ -20,15 +20,13 @@ public class Measurement {
     private User user;
 
     @Column(name = "RECORDDATE", nullable = false)
-    private LocalDate recorddate;
+    private LocalDate recorddate;  // ✅ Remove @Temporal - LocalDate works directly
 
-    @Column(name = "WEIGHT", nullable = false, precision = 5, scale = 2)
+    @Column(name = "WEIGHT")
     private Double weight;
 
-    @Column(name = "HEIGHT", precision = 5, scale = 2)
+    @Column(name = "HEIGHT")
     private Double height;
-
-    // BODY FAT PERCENTAGE REMOVED
 
     // Constructors
     public Measurement() {}

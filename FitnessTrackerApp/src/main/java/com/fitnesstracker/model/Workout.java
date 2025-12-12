@@ -7,24 +7,29 @@ import java.time.LocalDate;
  * Maps to the Workout table. Linked to User via user_id.
  */
 @Entity
+@Table(name = "WORKOUT")
 public class Workout {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "WORKOUTID")
     private Long workoutId;
 
     // Foreign Key: Links this workout back to one User
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // The actual User object linked by user_id FK
+    @JoinColumn(name = "USER_ID", nullable = false)
+    private User user;
 
-    @Column(nullable = false)
-    private LocalDate workoutdate;
+    @Column(name = "WORKOUTDATE", nullable = false)
+    private LocalDate workoutdate;  // ✅ Removed @Temporal annotation
 
     @Column(name = "WORKOUTTYPE", length = 20, nullable = false)
     private String workoutType;
 
-    private Long durationMinutes; // Using "Minutes" to be explicit
+    @Column(name = "DURATIONMINUTES")
+    private Long durationMinutes;
+
+    @Column(name = "CALORIESBURNED")
     private Integer caloriesBurned;
 
     public Workout() {}
@@ -48,6 +53,8 @@ public class Workout {
     public void setWorkoutType(String workoutType) { this.workoutType = workoutType; }
     public Long getDurationMinutes() { return durationMinutes; }
     public void setDurationMinutes(Long durationMinutes) { this.durationMinutes = durationMinutes; }
+    // Overloaded method to accept int values
+    public void setDurationMinutes(int durationMinutes) { this.durationMinutes = (long) durationMinutes; }
     public Integer getCaloriesBurned() { return caloriesBurned; }
     public void setCaloriesBurned(Integer caloriesBurned) { this.caloriesBurned = caloriesBurned; }
 }
